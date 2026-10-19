@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mapa Verde Santo André · Pontos de Coleta na Vila Bela Vista</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800;900&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,500&display=swap" rel="stylesheet">
+
+<style>
+
+:root {
+  --bs-primary: #0E8F5C;
+  --bs-primary-rgb: 14, 143, 92;
+
+  --cor-verde: #0E8F5C;
+  --cor-verde-escuro: #0A5C3D;
+  --cor-verde-clarinho: #DCF3E4;
+  --cor-azul: #1868D9;
+  --cor-amarelo: #F2B705;
+  --cor-vermelho: #E2412B;
+
+  --cor-papel: #1868D9;
+  --cor-eletronico: #FF7A29;
+  --cor-pilha: #C81E45;
+  --cor-oleo: #B98A1F;
+  --cor-movel: #4A6FA5;
+  --cor-pneu: #2B2B2B;
+}
+
+body {
+  font-family: 'Source Serif 4', Georgia, serif;
+}
+
+h1, h2, h3, h4, .navbar-brand, .btn, .accordion-button {
+  font-family: 'Archivo', sans-serif;
+}
+
+.fw-black {
+  font-weight: 900;
+}
+
+.logotipo {
+  width: 40px;
+  height: 40px;
+}
+
+.ilustracao-principal {
+  background-image: linear-gradient(135deg, var(--cor-verde) 0%, var(--cor-amarelo) 100%);
+  border-radius: 8px;
+  padding: 26px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .pino-piscando {
+    animation-name: piscar-pino;
+    animation-duration: 2.6s;
+    animation-timing-function: ease-in-out;
+    animation-iteration-count: infinite;
+  }
+  .pino-piscando:nth-of-type(2) { animation-delay: 0.4s; }
+  .pino-piscando:nth-of-type(3) { animation-delay: 0.8s; }
+  .pino-piscando:nth-of-type(4) { animation-delay: 1.2s; }
+  .pino-piscando:nth-of-type(5) { animation-delay: 1.6s; }
+  .pino-piscando:nth-of-type(6) { animation-delay: 2s; }
+}
+
+@keyframes piscar-pino {
+  0%   { r: 9;  opacity: 1; }
+  50%  { r: 11; opacity: 0.78; }
+  100% { r: 9;  opacity: 1; }
+}
+
+.ilustracao-como-encontrar {
+  background-color: #ffffff;
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.selo-papel      { background-color: var(--cor-papel); }
+.selo-oleo       { background-color: var(--cor-oleo); }
+.selo-eletronico { background-color: var(--cor-eletronico); }
+.selo-pilha      { background-color: var(--cor-pilha); }
+.selo-movel      { background-color: var(--cor-movel); }
+.selo-pneu       { background-color: var(--cor-pneu); }
+
+.traco-vermelho { border-top: 3px solid var(--cor-vermelho); width: 34px; }
+.traco-amarelo  { border-top: 3px solid var(--cor-amarelo); width: 34px; }
+.traco-verde    { border-top: 3px solid var(--cor-verde); width: 34px; }
+</style>
+</head>
+<body>
+
+<div id="raiz"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/react@18.3.1/umd/react.production.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/react-bootstrap@2.10.4/dist/react-bootstrap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@babel/standalone@7.25.6/babel.min.js"></script>
+
+<script type="text/babel">
+
+var Navbar = ReactBootstrap.Navbar;
+var Nav = ReactBootstrap.Nav;
+var Container = ReactBootstrap.Container;
+var Row = ReactBootstrap.Row;
+var Col = ReactBootstrap.Col;
+var Button = ReactBootstrap.Button;
+var Card = ReactBootstrap.Card;
+var Alert = ReactBootstrap.Alert;
+var Accordion = ReactBootstrap.Accordion;
+var Modal = ReactBootstrap.Modal;
+var Ratio = ReactBootstrap.Ratio;
+
+var pontosDeColeta = [
+  {
+    id: "vila-linda",
+    nome: "Vila Linda",
+    selos: [
+      { classe: "selo-papel", texto: "Recicláveis" },
+      { classe: "selo-oleo", texto: "Óleo" },
+      { classe: "selo-eletronico", texto: "Eletrônicos" }
+    ],
+    endereco: "Rua Cametá, 81 — Vila Linda, Santo André/SP",
+    horario: "Seg–sáb (com feriados), 9h–12h e 13h–17h",
+    observacao: "Aceita também móveis/entulho e pneus.",
+    link: "https://maps.app.goo.gl/TtVNrTkL3Jc58bwY6"
+  },
+  {
+    id: "paraiso",
+    nome: "Paraíso (Praça Juquiá)",
+    selos: [
+      { classe: "selo-papel", texto: "Recicláveis" },
+      { classe: "selo-oleo", texto: "Óleo" },
+      { classe: "selo-eletronico", texto: "Eletrônicos" }
+    ],
+    endereco: "Rua Juquiá, 200 — Paraíso, Santo André/SP",
+    horario: "Todos os dias, 9h–12h e 13h–17h",
+    observacao: "Aceita também móveis/entulho e pneus. Referência: perto da Praça Juquiá.",
+    link: "https://www.google.com.br/maps/place/R.+Juqui%C3%A1,+200+-+Jardim+Cristiane,+Santo+Andr%C3%A9+-+SP,+09185-240"
+  },
+  {
+    id: "centro",
+    nome: "Centro",
+    selos: [
+      { classe: "selo-papel", texto: "Recicláveis" },
+      { classe: "selo-oleo", texto: "Óleo" },
+      { classe: "selo-eletronico", texto: "Eletrônicos" }
+    ],
+    endereco: "Travessa São Bento, 15 — Bairro Jardim, Santo André/SP",
+    horario: "Seg–sáb (com feriados), 9h–12h e 13h–17h",
+    observacao: "Aceita também móveis/entulho e pneus.",
+    link: "https://goo.gl/maps/6FjvdLxg182k76Gz9"
+  },
+  {
+    id: "santo-expedito",
+    nome: "Santo Expedito",
+    selos: [
+      { classe: "selo-papel", texto: "Recicláveis" },
+      { classe: "selo-oleo", texto: "Óleo" },
+      { classe: "selo-eletronico", texto: "Eletrônicos" }
+    ],
+    endereco: "Rua Santo Expedito, 107 — Jardim Santo Antônio, Santo André/SP",
+    horario: "Seg–sáb (com feriados), 9h–12h e 13h–17h",
+    observacao: "Aceita também móveis/entulho e pneus.",
+    link: "https://www.google.com.br/maps/place/R.+Santo+Expedito,+107+-+Vila+Alto+de+Santo+Andre,+Santo+Andr%C3%A9+-+SP,+09240-425"
+  },
+  {
+    id: "carrefour",
+    nome: "Carrefour Santo André",
+    selos: [
+      { classe: "selo-pilha", texto: "Pilhas e baterias" }
+    ],
+    endereco: "Av. Pedro Américo, 23, Santo André/SP",
+    horario: "Horário comercial do estabelecimento",
+    observacao: "Posto do programa Green Eletron — não é uma Estação de Coleta do Semasa.",
+    link: "https://www.google.com/maps/search/Av.+Pedro+Am%C3%A9rico,+23+Santo+Andr%C3%A9"
+  },
+  {
+    id: "atrium",
+    nome: "Atrium Shopping (ponto exclusivo)",
+    selos: [
+      { classe: "selo-eletronico", texto: "Eletrônicos" }
+    ],
+    endereco: "Rua Giovanni Battista Pirelli, 155 — Vila Homero Thon, Santo André/SP",
+    horario: "Seg–sáb 10h–22h · Dom/feriados 14h–20h",
+    observacao: "Ponto exclusivo para eletrônicos, no piso térreo, em frente à Lupo.",
+    link: "https://www.google.com/maps/search/Atrium+Shopping+Santo+Andre"
+  }
+];
+
+var desenvolvedores = [
+  "Rhuan Mendes dos Santos",
+  "Luiz Fernando",
+  "Lucas Loureiro",
+  "Kauã Garcia Basilio"
+];
+
+function NumeroAnimado(props) {
+  var referencia = React.useRef(null);
+  var estado = React.useState(0);
+  var valorAtual = estado[0];
+  var mudarValorAtual = estado[1];
+
+  React.useEffect(function () {
+    function animar() {
+      var duracaoEmMilissegundos = 700;
+      var momentoInicial = performance.now();
+
+      function atualizarQuadro(momentoAtual) {
+        var tempoDecorrido = momentoAtual - momentoInicial;
+        var progresso = Math.min(tempoDecorrido / duracaoEmMilissegundos, 1);
+        var progressoSuavizado = 1 - Math.pow(1 - progresso, 3);
+
+        mudarValorAtual(Math.round(props.valorFinal * progressoSuavizado));
+
+        if (progresso < 1) {
+          requestAnimationFrame(atualizarQuadro);
+        }
+      }
+
+      requestAnimationFrame(atualizarQuadro);
+    }
+
+    var observador = new IntersectionObserver(function (listaDeEventos) {
+      if (listaDeEventos[0].isIntersecting) {
+        observador.disconnect();
+        animar();
+      }
+    }, { threshold: 0.6 });
+
+    observador.observe(referencia.current);
+
+    return function () {
+      observador.disconnect();
+    };
+  }, []);
+
+  return (
+    <div ref={referencia} className={props.className} style={props.estilo}>
+      {valorAtual}
+    </div>
+  );
+}
+
+function Navegacao() {
+  return (
+    <Navbar expand="lg" bg="white" variant="light" sticky="top" collapseOnSelect className="border-bottom">
+      <Container>
+
+        <Navbar.Brand href="#topo" className="fw-bold text-success">Mapa Verde Santo André</Navbar.Brand>
+
+        <Navbar.Toggle aria-controls="menuPrincipal" />
+
+        <Navbar.Collapse id="menuPrincipal" className="justify-content-end">
+          <Nav className="align-items-lg-center gap-lg-3">
+            <Nav.Link href="#sobre">Sobre</Nav.Link>
+            <Nav.Link href="#video">Vídeo</Nav.Link>
+            <Nav.Link href="#escola">Escola parceira</Nav.Link>
+            <Nav.Link href="#mapa">Mapa</Nav.Link>
+            <Nav.Link href="#pontos">Pontos de coleta</Nav.Link>
+            <Nav.Link href="#topo">
+              <svg className="logotipo" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="32" cy="32" r="31" fill="#0A5C3D" />
+                <g fill="none" strokeWidth="5.5" strokeLinecap="round">
+                  <path d="M32 12 L41 27 L32 27 Z" fill="#F2B705" stroke="#F2B705" strokeLinejoin="round" />
+                  <path d="M50 41 L41 27 L46 24 L52 34 Z" fill="#1868D9" stroke="#1868D9" strokeLinejoin="round" />
+                  <path d="M14 41 L23 27 L18 24 L12 34 Z" fill="#12A150" stroke="#12A150" strokeLinejoin="round" />
+                </g>
+                <text x="32" y="49" textAnchor="middle" fontFamily="Archivo, sans-serif" fontWeight="900" fontSize="11" fill="#ffffff">MVSA</text>
+              </svg>
+            </Nav.Link>
+          </Nav>
+        </Navbar.Collapse>
+
+      </Container>
+    </Navbar>
+  );
+}
+
+function SecaoPrincipal() {
+  return (
+    <section id="topo" className="py-5 border-bottom">
+      <Container>
+        <Row className="align-items-center g-5">
+
+          <Col lg={6}>
+            <p className="text-success fw-bold small mb-2">Sustentabilidade 360</p>
+            <h1 className="display-5 fw-black text-success-emphasis mb-3">Descarte certo começa em saber para onde levar.</h1>
+            <p className="lead text-secondary mb-4">Mapeamento digital dos pontos de coleta seletiva, pilhas, eletrônicos e óleo de cozinha na Vila Bela Vista e arredores, em Santo André — pensado para estudantes, professores e famílias da comunidade escolar encontrarem o destino correto para cada resíduo, sem precisar ir longe.</p>
+            <div className="d-flex flex-wrap gap-3">
+              <Button href="#mapa" variant="success" size="lg">Como encontrar um ponto</Button>
+              <Button href="#pontos" variant="outline-success" size="lg">Consultar pontos de coleta</Button>
+            </div>
+          </Col>
+
+          <Col lg={6}>
+            <div className="ilustracao-principal">
+              <svg viewBox="0 0 420 340" xmlns="http://www.w3.org/2000/svg">
+                <g stroke="rgba(255,255,255,0.35)" strokeWidth="2">
+                  <line x1="0" y1="70" x2="420" y2="70" />
+                  <line x1="0" y1="170" x2="420" y2="170" />
+                  <line x1="0" y1="260" x2="420" y2="260" />
+                  <line x1="90" y1="0" x2="90" y2="340" />
+                  <line x1="230" y1="0" x2="230" y2="340" />
+                  <line x1="340" y1="0" x2="340" y2="340" />
+                </g>
+                <g>
+                  <circle className="pino-piscando" cx="90" cy="70" r="9" fill="#E2412B" />
+                  <circle cx="90" cy="70" r="3" fill="#fff" />
+                  <circle className="pino-piscando" cx="230" cy="70" r="9" fill="#F2B705" />
+                  <circle cx="230" cy="70" r="3" fill="#fff" />
+                  <circle className="pino-piscando" cx="340" cy="170" r="9" fill="#12A150" />
+                  <circle cx="340" cy="170" r="3" fill="#fff" />
+                  <circle className="pino-piscando" cx="90" cy="170" r="9" fill="#12A150" />
+                  <circle cx="90" cy="170" r="3" fill="#fff" />
+                  <circle className="pino-piscando" cx="230" cy="260" r="9" fill="#E2412B" />
+                  <circle cx="230" cy="260" r="3" fill="#fff" />
+                </g>
+              </svg>
+            </div>
+          </Col>
+
+        </Row>
+      </Container>
+    </section>
+  );
+}
+
+function FaixaNumeros() {
+  return (
+    <section className="bg-light border-bottom py-4">
+      <Container>
+        <Row className="text-center">
+          <Col xs={6} md={3} className="border-end">
+            <NumeroAnimado valorFinal={6} className="fs-2 fw-black text-success-emphasis" />
+            <div className="small text-secondary">pontos de coleta mapeados</div>
+          </Col>
+          <Col xs={6} md={3} className="border-end">
+            <NumeroAnimado valorFinal={6} className="fs-2 fw-black" estilo={{ color: "var(--cor-amarelo)" }} />
+            <div className="small text-secondary">tipos de resíduo cobertos</div>
+          </Col>
+          <Col xs={6} md={3} className="border-end">
+            <NumeroAnimado valorFinal={1} className="fs-2 fw-black text-success-emphasis" />
+            <div className="small text-secondary">escola parceira</div>
+          </Col>
+          <Col xs={6} md={3}>
+            <NumeroAnimado valorFinal={2} className="fs-2 fw-black" estilo={{ color: "var(--cor-vermelho)" }} />
+            <div className="small text-secondary">fontes oficiais consultadas</div>
+          </Col>
+        </Row>
+      </Container>
+    </section>
+  );
+}
+
+function SobreProjeto() {
+  return (
+    <section id="sobre" className="py-5 border-bottom">
+      <Container>
+
+        <Row className="mb-4">
+          <Col lg={4}>
+            <h2 className="fw-black text-success-emphasis">Sobre o projeto</h2>
+          </Col>
+          <Col lg={7}>
+            <p className="text-secondary">Falta informação centralizada e acessível sobre onde descartar corretamente resíduos no entorno da escola, na Vila Bela Vista. Este projeto reúne os pontos de coleta oficiais mais próximos — com dados extraídos diretamente do <strong>Semasa / Prefeitura de Santo André</strong> — cada um já com um link direto pro Google Maps.</p>
+          </Col>
+        </Row>
+
+        <Row className="g-4">
+          <Col md={4}>
+            <hr className="traco-vermelho" />
+            <h3 className="h5">O problema</h3>
+            <p className="text-secondary small">Estudantes, professores e moradores do entorno não sabem, na prática, para onde levar pilhas, eletrônicos, óleo de cozinha usado ou recicláveis — a informação existe, mas está espalhada.</p>
+          </Col>
+          <Col md={4}>
+            <hr className="traco-amarelo" />
+            <h3 className="h5">A solução</h3>
+            <p className="text-secondary small">Uma página reunindo só os pontos de coleta oficiais próximos à Vila Bela Vista, sem precisar ir longe, cada um já com o link pronto pra abrir a rota no Google Maps.</p>
+          </Col>
+          <Col md={4}>
+            <hr className="traco-verde" />
+            <h3 className="h5">O impacto</h3>
+            <p className="text-secondary small">Une o aprendizado prático do curso de ADS a um resultado social direto: mais resíduos descartados no lugar certo, com menos contaminação e mais educação ambiental.</p>
+          </Col>
+        </Row>
+
+      </Container>
+    </section>
+  );
+}
+
+function SecaoVideo() {
+  return (
+    <section id="video" className="py-5 border-bottom">
+      <Container>
+
+        <Row className="mb-4">
+          <Col lg={4}>
+            <h2 className="fw-black text-success-emphasis">Por que reciclar importa</h2>
+          </Col>
+          <Col lg={7}>
+            <p className="text-secondary">Um vídeo curto pra contextualizar o porquê de mapear esses pontos — pra ver em sala de aula ou em casa, antes de olhar o mapa.</p>
+          </Col>
+        </Row>
+
+        <Ratio aspectRatio="16x9">
+          <iframe src="https://www.youtube.com/embed/ITur0JNJZos" title="A importância da reciclagem" loading="lazy" allowFullScreen></iframe>
+        </Ratio>
+
+      </Container>
+    </section>
+  );
+}
+
+function EscolaParceira() {
+  return (
+    <section id="escola" className="py-5 border-bottom">
+      <Container>
+
+        <Row className="mb-4">
+          <Col lg={4}>
+            <h2 className="fw-black text-success-emphasis">Escola parceira</h2>
+          </Col>
+          <Col lg={7}>
+            <p className="text-secondary">Unidade de ensino público na Vila Bela Vista onde o projeto é aplicado e divulgado junto a alunos, professores e famílias.</p>
+          </Col>
+        </Row>
+
+        <Card className="text-bg-success p-4 p-lg-5">
+          <Row>
+            <Col md={6}>
+              <span className="badge bg-light text-success-emphasis mb-2">Unidade parceira</span>
+              <h3 className="h4 fw-bold">E.E. Padre Louis Joseph Lebret</h3>
+              <p className="mb-3">Escola estadual — Jardim Progresso / Vila Bela Vista, Santo André/SP</p>
+              <ul className="list-unstyled small border-top border-light border-opacity-25 pt-3">
+                <li className="pb-2 border-bottom border-light border-opacity-25 mb-2"><strong>Endereço:</strong> Rua Londrina, 328 — Jardim Progresso, CEP 09181-160 (próx. à Rua Penalva)</li>
+                <li className="pb-2 border-bottom border-light border-opacity-25 mb-2"><strong>Turno:</strong> Tempo integral — Ensino Fundamental (Anos Iniciais)</li>
+                <li><strong>Contato:</strong> (11) 4453-0666</li>
+              </ul>
+            </Col>
+            <Col md={6}>
+              <p className="mb-0">O mapa é divulgado junto à direção e ao corpo docente da escola, apoiando ações de educação ambiental já realizadas pela unidade.</p>
+            </Col>
+          </Row>
+        </Card>
+
+      </Container>
+    </section>
+  );
+}
+
+function ComoEncontrar() {
+  return (
+    <section id="mapa" className="py-5 border-bottom">
+      <Container>
+
+        <Row className="mb-4">
+          <Col lg={4}>
+            <h2 className="fw-black text-success-emphasis">Como encontrar um ponto</h2>
+          </Col>
+          <Col lg={7}>
+            <p className="text-secondary">Sem complicação: cada ponto de coleta listado logo abaixo já tem um link direto pro Google Maps — é só abrir e seguir a rota.</p>
+          </Col>
+        </Row>
+
+        <Row className="align-items-center bg-light rounded-3 p-4 p-lg-5 g-4 mx-0">
+          <Col lg={6}>
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#0E8F5C" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mb-3">
+              <path d="M9 20l-5.447-2.724A1 1 0 0 1 3 16.382V5.618a1 1 0 0 1 1.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0 0 21 18.382V7.618a1 1 0 0 0-.553-.894L15 4m0 13V4m0 0L9 7"></path>
+            </svg>
+            <h3 className="h5 text-success-emphasis fw-bold">Toque em "Ver no mapa" em qualquer ponto</h3>
+            <p className="text-secondary">Abre a localização exata direto no aplicativo do Google Maps do seu celular, com a rota pronta pra seguir.</p>
+            <Button href="#pontos" variant="success">Ver pontos de coleta</Button>
+          </Col>
+          <Col lg={6}>
+            <div className="ilustracao-como-encontrar">
+              <svg viewBox="0 0 320 260" xmlns="http://www.w3.org/2000/svg">
+                <rect x="20" y="20" width="200" height="130" rx="8" fill="#ffffff" stroke="#CFE2CA" strokeWidth="2" />
+                <circle cx="42" cy="46" r="6" fill="#1868D9" />
+                <rect x="58" y="40" width="110" height="12" rx="3" fill="#0A5C3D" opacity="0.85" />
+                <rect x="42" y="68" width="150" height="8" rx="3" fill="#425249" opacity="0.35" />
+                <rect x="42" y="84" width="110" height="8" rx="3" fill="#425249" opacity="0.35" />
+                <rect x="42" y="112" width="90" height="14" rx="4" fill="#DCF3E4" />
+                <rect x="52" y="116" width="70" height="6" rx="3" fill="#0E8F5C" />
+                <path d="M228 85 L262 85" stroke="#F2B705" strokeWidth="3" strokeLinecap="round" />
+                <path d="M254 76 L264 85 L254 94" fill="none" stroke="#F2B705" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+                <circle cx="270" cy="130" r="34" fill="#DCF3E4" />
+                <path d="M270 108 c14 0 24 10 24 23 c0 17 -24 40 -24 40 s-24 -23 -24 -40 c0 -13 10 -23 24 -23 z" fill="#E2412B" />
+                <circle cx="270" cy="130" r="8" fill="#ffffff" />
+              </svg>
+            </div>
+          </Col>
+        </Row>
+
+      </Container>
+    </section>
+  );
+}
+
+function PontosDeColeta() {
+  return (
+    <section id="pontos" className="py-5">
+      <Container>
+
+        <Row className="mb-4">
+          <Col lg={4}>
+            <h2 className="fw-black text-success-emphasis">Pontos de coleta — Vila Bela Vista</h2>
+          </Col>
+          <Col lg={7}>
+            <p className="text-secondary">Lista reduzida aos pontos mais próximos da escola, na Vila Bela Vista e bairros vizinhos. Dados extraídos do Semasa / Prefeitura de Santo André.</p>
+          </Col>
+        </Row>
+
+        <Alert variant="success">
+          As Estações de Coleta do Semasa <strong className="text-danger">não recebem pilhas nem baterias</strong> — esse material tem um posto próprio (Green Eletron), listado abaixo.
+        </Alert>
+
+        <Accordion defaultActiveKey="vila-linda">
+          {pontosDeColeta.map(function (ponto) {
+            return (
+              <Accordion.Item eventKey={ponto.id} key={ponto.id}>
+                <Accordion.Header>
+                  {ponto.nome}
+                  {ponto.selos.map(function (selo) {
+                    return (
+                      <span key={selo.texto} className={"badge ms-2 " + selo.classe}>{selo.texto}</span>
+                    );
+                  })}
+                </Accordion.Header>
+                <Accordion.Body>
+                  <p className="mb-1"><strong>Endereço:</strong> {ponto.endereco}</p>
+                  <p className="mb-1 text-secondary small"><strong>Horário:</strong> {ponto.horario}</p>
+                  <p className="mb-3 small">{ponto.observacao}</p>
+                  <Button href={ponto.link} target="_blank" rel="noopener" variant="success" size="sm">Ver no mapa →</Button>
+                </Accordion.Body>
+              </Accordion.Item>
+            );
+          })}
+        </Accordion>
+
+        <p className="text-secondary small mt-4">Endereços e horários: Semasa / Prefeitura de Santo André. Posto de pilhas e baterias: programa Green Eletron. Lista de pilhas sujeita a atualização — confirme no site da Green Eletron antes de imprimir o material.</p>
+
+      </Container>
+    </section>
+  );
+}
+
+function ModalCreditos(props) {
+  return (
+    <Modal show={props.aberto} onHide={props.aoFechar} centered>
+      <Modal.Header closeButton>
+        <Modal.Title className="fw-bold text-success-emphasis">Créditos</Modal.Title>
+      </Modal.Header>
+
+      <Modal.Body>
+        <p className="text-secondary small mb-1">Instituição de ensino</p>
+        <p className="fw-bold mb-3">Escola Senai Armando de Arruda Pereira</p>
+
+        <p className="text-secondary small mb-1">Desenvolvedores do projeto</p>
+        <ul className="list-unstyled mb-0">
+          {desenvolvedores.map(function (nome) {
+            return <li key={nome}>{nome}</li>;
+          })}
+        </ul>
+      </Modal.Body>
+
+      <Modal.Footer>
+        <Button variant="success" onClick={props.aoFechar}>Fechar</Button>
+      </Modal.Footer>
+    </Modal>
+  );
+}
+
+function Rodape() {
+  var estado = React.useState(false);
+  var creditosAbertos = estado[0];
+  var mudarCreditosAbertos = estado[1];
+
+  function abrirCreditos() {
+    mudarCreditosAbertos(true);
+  }
+
+  function fecharCreditos() {
+    mudarCreditosAbertos(false);
+  }
+
+  return (
+    <footer className="text-light py-5" style={{ backgroundColor: "var(--cor-verde-escuro)" }}>
+      <Container>
+        <Row className="g-4 mb-4">
+
+          <Col md={7}>
+            <h4 className="h6 fw-bold">Mapa Verde Santo André</h4>
+            <p className="small text-white-50">Mapeamento de pontos de coleta seletiva, pilhas, eletrônicos e óleo de cozinha na Vila Bela Vista, Santo André, em parceria com a E.E. Padre Louis Joseph Lebret.</p>
+          </Col>
+
+          <Col md={5}>
+            <h4 className="h6 fw-bold">Fontes oficiais</h4>
+            <ul className="list-unstyled small">
+              <li><a className="link-light" href="https://portais.santoandre.sp.gov.br/semasa/residuos/estacoes-de-coleta/" target="_blank" rel="noopener">Semasa — Estações de Coleta</a></li>
+              <li><a className="link-light" href="https://portais.santoandre.sp.gov.br/semasa/residuos/residuos-perigosos-e-outros/pilhas-e-baterias/" target="_blank" rel="noopener">Semasa — Pilhas e baterias</a></li>
+            </ul>
+          </Col>
+
+        </Row>
+
+        <div className="d-flex flex-wrap gap-2 border-top border-light border-opacity-25 pt-4">
+          <Button variant="outline-light" size="sm" onClick={abrirCreditos}>Créditos</Button>
+          <Button variant="warning" size="sm" href="https://forms.gle/AGrYZTCqumhZgrxK9" target="_blank" rel="noopener">Feedback</Button>
+        </div>
+
+      </Container>
+
+      <ModalCreditos aberto={creditosAbertos} aoFechar={fecharCreditos} />
+    </footer>
+  );
+}
+
+function App() {
+  return (
+    <div>
+      <Navegacao />
+      <main>
+        <SecaoPrincipal />
+        <FaixaNumeros />
+        <SobreProjeto />
+        <SecaoVideo />
+        <EscolaParceira />
+        <ComoEncontrar />
+        <PontosDeColeta />
+      </main>
+      <Rodape />
+    </div>
+  );
+}
+
+var raiz = ReactDOM.createRoot(document.getElementById("raiz"));
+raiz.render(<App />);
+
+</script>
+
+</body>
+</html>
